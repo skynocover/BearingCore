@@ -1,9 +1,119 @@
 ﻿using System;
 
-namespace test
+namespace test2
 {
-    class Bearing{
-         #region 參數
+    class Program2
+    {
+        static void Main2(string[] args)
+        {
+            d = 80;
+            a = 100;
+            b = 200;
+            c = 100;
+            E = 21000;
+
+            Angle1 = 0;
+            Angle2 = 0;
+            Arrange1 = 3;
+            Arrange2 = 1;
+            p1 =539;
+            p2 = 3867;
+
+            P1P2_calculate();
+            Rigidity_calculate();
+            
+            Ka = 500;
+            //前軸承
+            fr_1=fr;//徑向力
+            b_1=0; //軸承類型
+            bran_1 = 0; //軸承配置
+            a_1=0; //接觸角類型
+            c0_1=10000;//額定靜負荷
+            cs_1=10000;//單顆額定動負荷
+            b_con=2; //軸承個數
+            fv=1000;//預壓力 
+            //後軸承
+            fr_2=fr1;//徑向力
+            b_2=0; //軸承類型
+            bran_2 = 0; //軸承配置
+            a_2=0; //接觸角類型
+            c0_2=10000;//額定靜負荷
+            cs_2=10000;//單顆額定動負荷
+            b_con1=2; //軸承個數
+            fv1=1000;//預壓力 
+
+            CP_calculate();
+            Life_calculate();
+            
+            Console.WriteLine("fr="+ fr);
+            Console.WriteLine("fr1="+fr1);
+            Console.WriteLine(TotalR);
+            Console.WriteLine(life);
+            Console.WriteLine(life_year);
+        }
+        //input
+        //共用參數
+        public static double Ka ; //軸向力     
+        //前軸承輸入參數
+        public static double fr_1 ; //徑向力
+        public static int b_1 ; //軸承類型
+        public static int bran_1 ; //軸承配置
+        public static int a_1 ; //接觸角類型
+        public static double c0_1 ;//額定靜負荷
+        public static double cs_1 ; //單顆額定動負荷
+        public static int b_con;
+        public static double fv;
+        //後軸承輸入參數
+        public static double fr_2 ; //徑向力
+        public static int b_2 ; //軸承類型
+        public static int bran_2 ; //軸承配置
+        public static int a_2 ; //接觸角類型
+        public static double c0_2 ;//額定靜負荷
+        public static double cs_2 ; //單顆額定動負荷
+        public static int b_con1;
+        public static double fv1;
+
+
+
+
+        public static double d ;
+        public static double a;
+        public static double b;
+        public static double c;
+        public static double E;
+        public static int Angle1;
+        public static int Angle2;
+        public static int Arrange1 ;
+        public static int Arrange2 ;
+        public static double p1;
+        public static double p2;
+
+
+        #region 宣告
+        //輸出
+        public static double life;
+        public static double life_year;
+        public static string totallife;
+        public static string TotalR;
+        public static double fr;
+        public static double fr1;
+
+
+
+        public string[,] Plan = new string[5, 39]; //放置方案陣列 
+        public string[] Bearing = new string[7];  //放置軸承陣列
+        public int Plannum = 0; //當前共幾個方案
+        public int Plannow = 0; //現在顯示的是第幾個方案
+       
+        //前軸承輸出
+        public static double P_1;//徑向當量動負荷
+        public static double C_1;//額定動負荷
+        //後軸承輸出
+        public static double P_2;//徑向當量動負荷
+        public static double C_2;//額定動負荷
+        #endregion
+
+        #region 參數
         //失效概率
         public static double[] A1 = new double[6] { 0.25, 0.37, 0.47, 0.55, 0.64, 1 };
         //最大運行溫度
@@ -30,51 +140,81 @@ namespace test
                                                       { { 2.78, 2.4, 2.07, 1.87, 1.75, 1.58, 1.39, 1.26, 1.21 }, { 3.74, 3.23, 2.78, 2.52, 2.36, 2.13, 1.87, 1.69, 1.63 } } };
         #endregion
 
-        public double bfr ; //徑向力
-        public int type ; //軸承類型
-        public int arrange ; //軸承配置
-        public int angle ; //接觸角類型
-        public double c0 ;//額定靜負荷
-        public double cs ; //單顆額定動負荷
-        public int num; //軸承個數
-        public double fv; //預壓力
+        #region 主功能        
+        private static void CP_calculate() //CP計算
+        {
+            //共用參數
+            double Ka = 50; //軸向力
 
-        public double realfv(double fv,int arrange){ //取得正確的預壓力
-            switch (arrange)
-            {
-                case 2:
-                    return fv * 1.35;
-                case 3:
-                    return fv * 2;
-                default:
-                    return fv;
-            }
+            #region 前軸承    
+            double fv_1 = Calculate_fv(fv, bran_1);
+            int i_1 = Getnum(b_con);
+            //前軸承計算
+            double x_1;  //x係數
+            double y_1;  //y係數
+            double fa_1 =  Calculate_F(Ka,fv_1); //軸向負荷計算
+            Calculate_XY(i_1, fa_1, c0_1, b_1, bran_1, a_1, fr_1, out x_1, out y_1); //XY係數計算
+            C_1 =Calculate_C(i_1, cs_1); //額定動負荷計算
+            P_1 = Calculate_P(x_1,y_1,fr_1,fa_1); //當量軸承負荷計算
+            #endregion
+
+            #region 後軸承
+            
+            double fv_2 = Calculate_fv(fv1, bran_2); //預壓力 
+            int i_2 = Getnum(b_con1); //軸承個數
+            //後軸承計算
+            double x_2;  //x係數
+            double y_2;  //y係數
+            double fa_2 = Calculate_F(Ka,fv_2); //軸向負荷計算
+            Calculate_XY(i_2, fa_2, c0_2, b_2, bran_2, a_2, fr_2, out x_2, out y_2); //XY係數計算
+            C_2 = Calculate_C(i_2, cs_2); //額定動負荷計算
+            P_2 = Calculate_P(x_2, y_2, fr_2, fa_2); //當量軸承負荷計算
+            #endregion
+
+            
         }
-        public int realnum(int index){ //取得軸承數
-             switch (index)
+        private static void Life_calculate() //壽命計算
+        {
+            double Rpm = Convert.ToDouble(500);//轉速
+
+            //前軸承計算
+            double life_1 = 1000000 / 60 / Rpm * Math.Pow(C_1 / P_1, 3); ; //額定壽命計算
+            double year_1 = Calculate_life(life_1); //換算年
+           
+            life = Math.Round(life_1, 0);//顯示基本額定壽命(小時)
+            life_year=Math.Round(year_1, 2); //輸出年
+            //後軸承計算
+            double life_2 = 1000000 / 60 / Rpm * Math.Pow(C_2 / P_2, 3); ; //額定壽命計算
+            double year_2 = Calculate_life(life_2); //換算年
+            /*
+            if (uselife2.IsChecked == true) 
             {
-                case 0:
-                    return 2;
-                case 1:
-                    return 2;
-                case 2:
-                    return 3;
-                default:
-                    return 4;
+                double aiso = Convert.ToDouble(life_p1.Text);
+                double life2_2 = life_2 * aiso * Ft[Tempture.SelectedIndex] * A1[lost_chance.SelectedIndex];
+                life3.Text = Math.Round(life2_2, 0).ToString();
+                year_2 = Calculate_life(life2_2);
             }
+            life1.Text = Math.Round(life_2, 0).ToString();//顯示基本額定壽命(小時)
+            Life_year1.Text = Math.Round(year_2, 2).ToString(); //輸出年
+            */
+            totallife = "總壽命："+ Math.Round(Calculate_totallife(year_1, year_2),1).ToString() + "年";
+        } 
+        private static double Calculate_totallife(double y1,double y2) //總壽命計算
+        {
+            double p1 = Math.Pow(y1, 1.1);
+            double p2 = Math.Pow(y2, 1.1);
+
+            return 1 / (Math.Pow((1 / p1 + 1 / p2), 1 / 1.1));
         }
-        public double realf(double ka, double fv){ //軸向負荷計算    
-            if (ka > 3 * fv)
-            {
-                return ka;
-            }
-            else
-            {
-                return fv + 0.67 * ka;
-            }
+        private static double Calculate_life(double hour)  //壽命換算時間
+        {
+            double p1 = 24; //hours day
+            double p2 = 365; //day year
+            return hour / p1 / p2;
         }
-        public void xy(int i, double fa, double c0, int b,int bran, int a, double fr, out double x, out double y){
-             //i 軸承個數
+        private static void Calculate_XY(int i, double fa, double c0, int b,int bran, int a, double fr, out double x, out double y) //XY係數
+        {
+            //i 軸承個數
             //fa 軸向負荷
             //c0 額定靜負荷
             //b 軸承類型
@@ -158,147 +298,58 @@ namespace test
                 y = DGY[p1, p2, kk];
             }
         }
-
-        public double C(double ii, double cs) //額定動負荷計算
+        private static double Calculate_C(double ii, double cs) //額定動負荷計算
         {
             return Math.Pow(ii, 0.7) * cs;
         }
-        public double P(double x,double y , double fr,double fa) //當量的軸承負荷計算
+        private static double Calculate_P(double x,double y , double fr,double fa) //當量的軸承負荷計算
         {
             return x * fr + y * fa;
         }
-
-        public double life(double C , double P){
-            double Rpm = Convert.ToDouble(500);//轉速
-            return 1000000 / 60 / Rpm * Math.Pow(C / P, 3);
-        }
-    }
-    class Program
-    {
-         //input
-        //共用參數
-        public static double Ka ; //軸向力    
-
-        public static double d ;
-        public static double a;
-        public static double b;
-        public static double c;
-        public static double E;
-        public static int Angle1;
-        public static int Angle2;
-        public static int Arrange1 ;
-        public static int Arrange2 ;
-        public static double p1;
-        public static double p2;
-
-
-        #region 宣告
-        //輸出
-        public static double life;
-        public static double life_year;
-        public static string TotalR;
-        public static double fr;
-        public static double fr1;
-
-
-
-        public string[,] Plan = new string[5, 39]; //放置方案陣列 
-        public string[] Bearing = new string[7];  //放置軸承陣列
-        public int Plannum = 0; //當前共幾個方案
-        public int Plannow = 0; //現在顯示的是第幾個方案
-        #endregion
-
-        static void Main(string[] args)
+        private static double Calculate_F(double ka, double fv) //軸向負荷計算
         {
-            d = 80;
-            a = 100;
-            b = 200;
-            c = 100;
-            E = 21000;
-
-            Angle1 = 0;
-            Angle2 = 0;
-            Arrange1 = 3;
-            Arrange2 = 1;
-            p1 =539;
-            p2 = 3867;
-
+            if (ka > 3 * fv)
+            {
+                return ka;
+            }
+            else
+            {
+                return fv + 0.67 * ka;
+            }
+        }
+        private static double Calculate_fv(double fv, int arrange) //取得正確的預壓力
+        {
+            switch (arrange)
+            {
+                case 2:
+                    return fv * 1.35;
+                case 3:
+                    return fv * 2;
+                default:
+                    return fv;
+            }
+        }
+        private static int Getnum(int index) //取得軸承數
+        {
+            switch (index)
+            {
+                case 0:
+                    return 2;
+                case 1:
+                    return 2;
+                case 2:
+                    return 3;
+                default:
+                    return 4;
+            }
+        }
+        private static void All_calculate() //P1P2計算 CP計算 life計算 剛性計算
+        {
             P1P2_calculate();
+            CP_calculate();
+            Life_calculate();
             Rigidity_calculate();
-            
-            Ka = 50;
-            
-            Bearing bearing1 = new Bearing{
-            bfr = fr,
-            type = 0,
-            arrange = 0,
-            angle = 0,
-            c0 = 10000,
-            cs = 10000,
-            num = 2,
-            fv = 1000,
-            };
-
-            Bearing bearing2 = new Bearing{
-                bfr = fr1,
-                type = 0,
-                arrange = 0,
-                angle = 0,
-                c0 = 10000,
-                cs = 10000,
-                num = 2,
-                fv = 1000,
-            };
-
-            double f1 = bearing1.realf(Ka , bearing1.realfv(bearing1.fv,bearing1.arrange));
-            int num1 = bearing1.realnum(bearing1.num);
-            double x1;
-            double y1;
-            bearing1.xy(bearing1.num,f1,bearing1.c0,bearing1.type,bearing1.arrange,bearing1.angle,bearing1.bfr,out x1,out y1);
-            double C1 = bearing1.C(bearing1.num,bearing1.cs);
-            double P1 = bearing1.P(x1,y1,bearing1.bfr,f1);
-
-            double f2 = bearing2.realf(Ka , bearing2.realfv(bearing2.fv,bearing2.arrange));
-            int num2 = bearing2.realnum(bearing2.num);
-            double x2;
-            double y2;
-            bearing2.xy(bearing2.num,f2,bearing2.c0,bearing2.type,bearing2.arrange,bearing2.angle,bearing2.bfr,out x2,out y2);
-            double C2 = bearing2.C(bearing2.num,bearing2.cs);
-            double P2 = bearing2.P(x2,y2,bearing2.bfr,f2);
-
-            life = Math.Round(bearing1.life(C1,P1), 0);
-            life_year = Calculate_life(life);
-
-            double life2 = Math.Round(bearing2.life(C2,P2), 0);
-            double life_year2 = Calculate_life(life2);
-
-            //Life_calculate();
-            
-            Console.WriteLine("fr="+ fr);
-            Console.WriteLine("fr1="+fr1);
-            Console.WriteLine(TotalR);
-            Console.WriteLine(life);
-            Console.WriteLine(life_year);
-            //Console.WriteLine(Calculate_totallife(life_year,life_year2));
         }
-       
-
-        #region 主功能     
-       
-        private static double Calculate_totallife(double y1,double y2) //總壽命計算
-        {
-            double p1 = Math.Pow(y1, 1.1);
-            double p2 = Math.Pow(y2, 1.1);
-
-            return 1 / (Math.Pow((1 / p1 + 1 / p2), 1 / 1.1));
-        }
-        private static double Calculate_life(double hour)  //壽命換算時間
-        {
-            double p1 = 24; //hours day
-            double p2 = 365; //day year
-            return hour / p1 / p2;
-        }   
-       
         #endregion
          private static void Rigidity_calculate()
         {   

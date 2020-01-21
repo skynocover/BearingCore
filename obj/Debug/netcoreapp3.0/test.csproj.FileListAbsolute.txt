@@ -9,3 +9,14 @@
 /home/ericwu/文件/dotdev/test/obj/Debug/netcoreapp3.0/test.AssemblyInfo.cs
 /home/ericwu/文件/dotdev/test/obj/Debug/netcoreapp3.0/test.dll
 /home/ericwu/文件/dotdev/test/obj/Debug/netcoreapp3.0/test.pdb
+/home/ericwu/文件/dotdev/BearingCore/bin/Debug/netcoreapp3.0/test
+/home/ericwu/文件/dotdev/BearingCore/bin/Debug/netcoreapp3.0/test.deps.json
+/home/ericwu/文件/dotdev/BearingCore/bin/Debug/netcoreapp3.0/test.runtimeconfig.json
+/home/ericwu/文件/dotdev/BearingCore/bin/Debug/netcoreapp3.0/test.runtimeconfig.dev.json
+/home/ericwu/文件/dotdev/BearingCore/bin/Debug/netcoreapp3.0/test.dll
+/home/ericwu/文件/dotdev/BearingCore/bin/Debug/netcoreapp3.0/test.pdb
+/home/ericwu/文件/dotdev/BearingCore/obj/Debug/netcoreapp3.0/test.csprojAssemblyReference.cache
+/home/ericwu/文件/dotdev/BearingCore/obj/Debug/netcoreapp3.0/test.AssemblyInfoInputs.cache
+/home/ericwu/文件/dotdev/BearingCore/obj/Debug/netcoreapp3.0/test.AssemblyInfo.cs
+/home/ericwu/文件/dotdev/BearingCore/obj/Debug/netcoreapp3.0/test.dll
+/home/ericwu/文件/dotdev/BearingCore/obj/Debug/netcoreapp3.0/test.pdb
